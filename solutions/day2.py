@@ -1,13 +1,15 @@
 def pos_and_depth_mul(commands):
     horiz_pos = 0
     depth = 0
+    aim = 0
     for cmd, unit in commands:
         if cmd == "forward":
             horiz_pos += unit
+            depth += aim * unit
         elif cmd == "down":
-            depth += unit
+            aim += unit
         else:
-            depth -= unit
+            aim -= unit
 
     return horiz_pos * depth
 
