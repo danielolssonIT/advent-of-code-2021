@@ -19,6 +19,31 @@ def solve(lines):
     return gamma * epsilon
 
 
+def value_to_keep(lines, bit_position, most_common=True):
+    number_of_ones = [line[bit_position] for line in lines].count("1")
+    number_of_zeros = len(lines) - number_of_ones
+    rating = "1" if number_of_ones >= number_of_zeros else "0"
+    opposite = "1" if rating == "0" else "0"
+    return rating if most_common else opposite
+
+
+def solve_part2(lines):
+    lines_left = lines.copy()
+    for i in range(len(lines[0])):
+        if len(lines_left) == 1:
+            break
+        lines_left = list(filter(lambda l: l[i] == value_to_keep(lines_left, i), lines_left))
+    oxygen = int(lines_left[0], 2)
+
+    lines_left = lines.copy()
+    for i in range(len(lines[0])):
+        if len(lines_left) == 1:
+            break
+        lines_left = list(filter(lambda l: l[i] == value_to_keep(lines_left, i, most_common=False), lines_left))
+    co2 = int(lines_left[0], 2)
+    return oxygen * co2
+
+
 example_input = [
     "00100",
     "11110",
@@ -33,4 +58,4 @@ example_input = [
     "00010",
     "01010"
 ]
-print(solve(read_input_from_file()))
+print(solve_part2(read_input_from_file()))
