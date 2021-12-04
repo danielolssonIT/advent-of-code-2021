@@ -25,7 +25,7 @@ def format_input(text):
 
 
 def solution_from_file():
-    with open('../inputs/day2.txt', 'r') as f:
+    with open('day2.txt', 'r') as f:
         cmds = format_input(f.readlines())
 
     return pos_and_depth_mul(cmds)

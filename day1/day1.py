@@ -12,7 +12,7 @@ def increases(inp_list):
     return num_of_increases
 
 
-with open('../inputs/day1.txt', 'r') as f:
+with open('day1.txt', 'r') as f:
     inp = list(map(int, f.readlines()))
 
 print(increases(inp))

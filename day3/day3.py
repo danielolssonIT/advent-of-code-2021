@@ -1,5 +1,5 @@
 def read_input_from_file():
-    with open('../inputs/day3.txt') as f:
+    with open('day3.txt') as f:
         return list(map(lambda s: s.strip(), f.readlines()))
 
 
