@@ -21,4 +21,21 @@ def solve_part1(days, example=False):
     return len(lantern_fish)
 
 
-print(solve_part1(80, False))
+def solve_part2(days, example=False):
+    lantern_fish = parse_input(example)
+    fish_day_amount = dict((el, 0) for el in range(0, 8+1))
+    for fish in lantern_fish:
+        fish_day_amount[fish] += 1
+    start_day = 6
+    new_fish_start_day = 8
+    for sim_day in range(days):
+        zero_days = fish_day_amount[0]
+        for day in range(1, new_fish_start_day+1):
+            fish_day_amount[day-1] = fish_day_amount[day]
+        fish_day_amount[start_day] += zero_days
+        fish_day_amount[new_fish_start_day] = zero_days
+
+    return sum(fish_day_amount.values())
+
+
+print(solve_part2(256, False))
