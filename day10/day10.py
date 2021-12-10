@@ -7,7 +7,15 @@ illegal_char_points = {
     '>': 25137
 }
 
-closed_matching_open = {')': '(', ']': '[', '}': '{', '>': '<'}
+completion_char_points = {
+    ')': 1,
+    ']': 2,
+    '}': 3,
+    '>': 4
+}
+
+opening_symbols = {'(', '[', '{', '<'}
+open_match_pair = {'(': ')', '[': ']', '{': '}', '<': '>'}
 
 
 def parse_input(example=False):
@@ -18,7 +26,6 @@ def parse_input(example=False):
 
 def solve_part1(example=False):
     data = parse_input(example)
-    opening_symbols = {'(', '[', '{', '<'}
     first_illegal_chars = []
     for line in data:
         stack = collections.deque()
@@ -27,10 +34,52 @@ def solve_part1(example=False):
                 stack.append(c)
                 continue
             last_opened_symbol = stack.pop()
-            if closed_matching_open[c] != last_opened_symbol:
+            if open_match_pair[last_opened_symbol] != c:
                 first_illegal_chars.append(c)
                 break
     return sum(illegal_char_points[c] for c in first_illegal_chars)
 
 
+def incomplete_lines(lines):
+    incomplete = []
+    for line in lines:
+        corrupt = False
+        stack = collections.deque()
+        for c in line:
+            if c in opening_symbols:
+                stack.append(c)
+                continue
+            last_opened_symbol = stack.pop()
+            if open_match_pair[last_opened_symbol] != c:
+                corrupt = True
+                break
+        if not corrupt:
+            incomplete.append(line)
+    return incomplete
+
+
+def solve_part2(example=False):
+    incomplete = incomplete_lines(parse_input(example))
+    total_scores = []
+    for line in incomplete:
+        stack = collections.deque()
+        completion_chars = []
+        for c in line:
+            if c in opening_symbols:
+                stack.append(c)
+            else:
+                stack.pop()
+
+        while stack:
+            opening_symbol = stack.pop()
+            completion_chars.append(open_match_pair[opening_symbol])
+        score = 0
+        for c in completion_chars:
+            score *= 5
+            score += completion_char_points[c]
+        total_scores.append(score)
+    return sorted(total_scores)[len(total_scores) // 2]
+
+
 print(solve_part1())
+print(solve_part2())
