@@ -1,5 +1,6 @@
 import collections
 
+
 def parse_input(example):
     filename = "example.txt" if example else "day11.txt"
     data = []
@@ -23,37 +24,62 @@ def adjacent_positions(row, col):
     return adj_pos
 
 
-def print_grid(grid):
-    s = ""
-    for row in grid:
-        s += ''.join(str(c) for c in row)
-        s += '\n'
-    print(s)
-
-
 def solve_part1(example=False):
     grid = parse_input(example)
     flash_count = 0
     for step in range(100):
         already_flashed = set()
         to_flash = collections.deque()
+
+        def sim_step(row, col):
+            grid[row][col] += 1
+            if grid[row][col] > 9:
+                to_flash.append((row, col))
+                already_flashed.add((row, col))
+
         for i in range(10):
             for j in range(10):
-                grid[i][j] += 1
-                if grid[i][j] > 9:
-                    to_flash.append((i, j))
-                    already_flashed.add((i, j))
+                sim_step(i, j)
+
         while to_flash:
+            r, c = to_flash.popleft()
             flash_count += 1
+            grid[r][c] = 0
+            adj_pos_not_flashed = filter(lambda p: p not in already_flashed, adjacent_positions(r, c))
+            for ai, aj in adj_pos_not_flashed:
+                sim_step(ai, aj)
+
+    return flash_count
+
+
+def solve_part2(example=False):
+    grid = parse_input(example)
+    step = 0
+    while True:
+        if all(all(n == 0 for n in row) for row in grid):
+            return step
+
+        already_flashed = set()
+        to_flash = collections.deque()
+
+        def sim_step(row, col):
+            grid[row][col] += 1
+            if grid[row][col] > 9:
+                to_flash.append((row, col))
+                already_flashed.add((row, col))
+
+        for i in range(10):
+            for j in range(10):
+                sim_step(i, j)
+
+        while to_flash:
             r, c = to_flash.popleft()
             grid[r][c] = 0
             adj_pos_not_flashed = filter(lambda p: p not in already_flashed, adjacent_positions(r, c))
             for ai, aj in adj_pos_not_flashed:
-                grid[ai][aj] += 1
-                if grid[ai][aj] > 9:
-                    to_flash.append((ai, aj))
-                    already_flashed.add((ai, aj))
-    return flash_count
+                sim_step(ai, aj)
+        step += 1
 
 
 print(solve_part1())
+print(solve_part2())
