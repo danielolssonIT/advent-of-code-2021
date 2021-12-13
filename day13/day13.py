@@ -13,10 +13,8 @@ def parse_input(example=False):
 
 def fold(coords, axis, line):
     if axis == 'y':
-        new_coords = set((x, line - abs(y - line)) for x, y in coords)
-    else:
-        new_coords = set((line - abs(line - x), y) for x, y in coords)
-    return list(new_coords)
+        return set((x, line - abs(y - line)) for x, y in coords)
+    return set((line - abs(line - x), y) for x, y in coords)
 
 
 def solve(example=False, num_folds=1):
@@ -25,6 +23,7 @@ def solve(example=False, num_folds=1):
         axis, line = folds[i]
         coords = fold(coords, axis, int(line))
     dots_visible = len(coords)
+    print_grid(coords)
     return dots_visible
 
 
@@ -34,9 +33,8 @@ def print_grid(coords):
     grid = [['.' for _ in range(grid_width)] for _ in range(grid_height)]
     for x, y in coords:
         grid[y][x] = '#'
-    s = [''.join(row) for row in grid]
-    s = '\n'.join(s)
-    print(s)
+    print('\n'.join(''.join(row) for row in grid))
 
 
-print(solve())
+#print(solve())
+print(solve(num_folds=12))
