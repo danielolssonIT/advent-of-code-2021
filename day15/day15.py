@@ -1,26 +1,11 @@
 import networkx as nx
 
 
-def in_bounds(row, col, max_row, max_col):
-    return 0 <= row <= max_row and 0 <= col <= max_col
-
-
-def adjacent_positions(row, col, max_row, max_col):
-    adj_pos = [(row - 1, col), (row + 1, col), (row, col - 1), (row, col + 1)]
-    return [(i, j) for i, j in adj_pos if in_bounds(i, j, max_row, max_col)]
-
-
 def create_graph(grid):
-    graph = nx.DiGraph()
-    max_rows = len(grid) - 1
-    max_cols = len(grid[0]) - 1
-    for row, line in enumerate(grid):
-        for col, risk in enumerate(line):
-            graph.add_node((row, col))
-            for i, j in adjacent_positions(row, col, max_rows, max_cols):
-                risk = int(grid[i][j])
-                graph.add_edge((row, col), (i, j), weight=risk)
-    return graph, max_rows, max_cols
+    graph = nx.grid_2d_graph(len(grid), len(grid), create_using=nx.DiGraph)
+    for s, t in graph.edges:
+        graph[s][t]["weight"] = int(grid[t[0]][t[1]])
+    return graph, len(grid) - 1, len(grid[0]) - 1
 
 
 def parse_input(example=False, full_map=False):
