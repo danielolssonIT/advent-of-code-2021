@@ -1,45 +1,67 @@
 import ast
 import functools
+import itertools
 import math
 
 
 def add_leftmost(sn, rn):
+    if rn is None:
+        return sn
     if isinstance(sn, int):
         return sn + rn
     return [add_leftmost(sn[0], rn), sn[1]]
 
 
 def add_rightmost(sn, rn):
+    if rn is None:
+        return sn
     if isinstance(sn, int):
         return sn + rn
     return [sn[0], add_rightmost(sn[1], rn)]
 
 
-def reduce(sn, level=1):
+def split(sn):
     if isinstance(sn, int):
         if sn >= 10:
             half = sn / 2
-            return [math.floor(half), math.ceil(half)], True
-        return sn, False
+            return True, [math.floor(half), math.ceil(half)]
+        return False, sn
 
-    if level >= 4:
-        if isinstance(sn[0], list):
-            new_list = [0, add_leftmost(sn[1], sn[0][1])]
-            return new_list, True
-        if isinstance(sn[1], list):
-            new_list = [add_rightmost(sn[0], sn[1][0]), 0]
-            return new_list, True
+    is_split, res = split(sn[0])
+    if is_split:
+        return True, [res, sn[1]]
+    is_split, res = split(sn[1])
+    if is_split:
+        return True, [sn[0], res]
+
+    return False, sn
 
 
-    left, left_reduced = reduce(sn[0], level + 1)
-    if left_reduced:
-        return [left, sn[1]], True
+def explode(sn, level=1):
+    if isinstance(sn, int):
+        return False, None, sn, None
+    if level > 4:
+        return True, sn[0], 0, sn[1]
 
-    right, right_reduced = reduce(sn[1], level + 1)
-    if right_reduced:
-        return [sn[0], right], True
+    exploded, left, mid, right = explode(sn[0], level + 1)
+    if exploded:
+        return True, left, [mid, add_leftmost(sn[1], right)], None
+    exploded, left, mid, right = explode(sn[1], level + 1)
+    if exploded:
+        return True, None, [add_rightmost(sn[0], left), mid], right
+    return False, None, sn, None
 
-    return [left, right], False
+
+def reduce(sn):
+    while True:
+        exploded, _, sn, _ = explode(sn)
+        if exploded:
+            continue
+
+        is_split, sn = split(sn)
+        if not is_split:
+            break
+    return sn
 
 
 def magnitude(sn):
@@ -56,17 +78,10 @@ def parse_input(example=False):
 
 def solve_part1(example=False):
     lines = parse_input(example)
-    # sn_sum = functools.reduce(lambda sn1, sn2: reduce(add(sn1, sn2)), lines)
-    sn_sum = lines[0]
-    for i in range(1, len(lines)):
-        temp_sum = [sn_sum, lines[i]]
-        sn_sum = reduce(temp_sum)
-    sn_sum = reduce(sn_sum)
+    sn_sum = functools.reduce(lambda sn1, sn2: reduce([sn1, sn2]), lines)
 
     print(sn_sum)
-    return magnitude(sn_sum[0])
+    return magnitude(sn_sum)
 
 
-# s = [7,[6,[5,[4,[3,2]]]]]
-# print(add_leftmost(s, 2))
-print(solve_part1(True))
+print(solve_part1())
