@@ -84,4 +84,11 @@ def solve_part1(example=False):
     return magnitude(sn_sum)
 
 
-print(solve_part1())
+def solve_part2(example=False):
+    lines = parse_input(example)
+    perms = itertools.permutations(lines, 2)
+    return max(magnitude(reduce([sn1, sn2])) for sn1, sn2 in perms)
+
+
+# print(solve_part1())
+print(solve_part2())
