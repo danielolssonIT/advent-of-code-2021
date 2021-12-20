@@ -33,22 +33,15 @@ def enhance_img(img_enhance_alg, input_img, out_of_bounds_value):
     return output_img
 
 
-def solve_part1(example=False):
+def solve(example=False, iterations=1):
     img_enhance_alg, input_img = parse_input(example)
-    output_img = enhance_img(img_enhance_alg, input_img, 0)
-    # print('\n'.join(''.join(row) for row in output_img))
-    output_img = enhance_img(img_enhance_alg, output_img, 1)
-    # print('\n'.join(''.join(row) for row in output_img))
-    return sum(row.count("#") for row in output_img)
-
-
-def solve_part2(example=False):
-    img_enhance_alg, input_img = parse_input(example)
-    for i in range(50):
-        output_img = enhance_img(img_enhance_alg, input_img, i % 2)
+    output_img = []
+    alternating_border = img_enhance_alg[0] == '#'
+    for i in range(iterations):
+        output_img = enhance_img(img_enhance_alg, input_img, i % 2 if alternating_border else 0)
         input_img = output_img
     return sum(row.count("#") for row in output_img)
 
 
-#print(solve_part1())
-print(solve_part2())
+print(solve(iterations=2))
+print(solve(iterations=50))
